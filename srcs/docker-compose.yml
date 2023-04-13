@@ -1,0 +1,69 @@
+version: '3'
+
+services:
+    nginx:
+        container_name: nginx
+        #Precise le chemin du Dockerfile pour construire l'img
+        build: ./requirements/Nginx
+        #Doit etre lance avant
+        depends_on:
+          - wordpress
+        ports:
+            - 443:443
+        volumes:
+          - WordPress:/var/www/html
+        #Redemarrage automatique du container si echec
+        restart: always
+        #Nom du reseau
+        networks:
+          - Docker_Network
+
+    mariadb:
+        container_name: mariadb
+        build: ./requirements/mariadb
+        volumes:
+          - mariadb:/var/lib/mysql
+        restart: always
+        networks:
+          - Docker_Network
+        env_file:
+          - .env
+
+    wordpress:
+        container_name: wordpress
+        depends_on:
+          - mariadb
+        build: ./requirements/wordpress
+        volumes:
+          - WordPress:/var/www/html
+        restart: always       
+        networks:
+          - Docker_Network
+        env_file:
+          - .env
+
+#Stock les donnees BDD et WP
+volumes:
+    mariadb:
+        #Volume localement sur systeme hote
+        driver: local
+        driver_opts:
+          type: none
+          device: /home/mcloarec/data/mariadb
+          o: bind
+
+    WordPress:
+        driver: local
+        driver_opts:
+          #Aucun pilote de volume utilise
+          type: none
+          #Chemin absolu ou le volume sera stocke
+          device: /home/mcloarec/data/wordpress
+          #Montage dossier ou fichier du systeme hote dans un conteneur Docker(partage de donnees)
+          o: bind
+
+#Reseau Docker pour connecter tous les conteneurs
+networks:
+    Docker_Network:
+      #Type du pilote avec creation reseau prive interne aux conteneurs
+        driver: bridge
