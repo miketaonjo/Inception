@@ -24,8 +24,8 @@ Overview
 All services communicate exclusively through a Docker network and do not rely on host-installed services.
 
 ## Installation
-Fill in the .env file the required variables (database credentials, domain, etc.)
-Edit the Makefile login variable to match a 42 login
+- Fill in the .env file the required variables (database credentials, domain, etc.)
+- Edit the Makefile login variable to match a 42 login
 ```bash
 git clone <repository_url>
 cd inception/
